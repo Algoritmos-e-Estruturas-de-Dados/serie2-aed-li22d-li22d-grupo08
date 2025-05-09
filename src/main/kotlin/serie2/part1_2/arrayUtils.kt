@@ -13,9 +13,3 @@ fun minimum(maxHeap: Array<Int>, heapSize: Int): Int {
 
     return min
 }
-
-fun main() {
-    val heap = arrayOf(100, 50, 90, 20, 30, 80, 70)
-    val min = minimum(heap, heap.size)
-    print(min)
-}

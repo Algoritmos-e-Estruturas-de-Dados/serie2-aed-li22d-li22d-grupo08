@@ -60,6 +60,7 @@ fun <T> intersection(list1: Node<T>, list2: Node<T>, cmp: Comparator<T>): Node<T
                } else{
                    tail.next=curr1
                }
+               tail=curr1
                curr1=next1
                curr2=next2
 

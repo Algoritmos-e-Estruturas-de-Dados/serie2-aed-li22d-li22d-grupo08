@@ -114,3 +114,24 @@ private fun <E> Node<E>.removeSentinel( ): Node<E>?{
     return next
 }
 
+fun main() {
+    // Teste emptyList e isEmpty
+    val empty = emptyList<Int>()
+    println("Empty list is empty: ${empty.isEmpty()}") // Esperado: true
+
+    // Teste singletonList
+    val singleton = singletonList(24)
+    println("Singleton list toList(): ${singleton.toList()}") // Esperado: [42]
+    println("Singleton is empty: ${singleton.isEmpty()}") // Esperado: false
+
+    // Teste toLinkedList e toList
+    val originalList = listOf(1, 2, 3, 4)
+    val linkedList = originalList.toLinkedList()
+    println("Linked list toList(): ${linkedList.toList()}") // Esperado: [1, 2, 3, 4]
+
+    // Teste listToNode e nodeToList (sem sentinela)
+    val noSentinelHead = listToNode(listOf(10, 20, 30))
+    println("No sentinel list to regular List: ${nodeToList(noSentinelHead)}") // Esperado: [10, 20, 30]
+}
+
+

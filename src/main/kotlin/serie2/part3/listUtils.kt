@@ -75,5 +75,5 @@ fun <T> intersection(list1: Node<T>, list2: Node<T>, cmp: Comparator<T>): Node<T
 
     }
 
-return head
+ return head
 }

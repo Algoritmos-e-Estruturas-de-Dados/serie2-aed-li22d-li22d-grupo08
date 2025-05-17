@@ -76,10 +76,7 @@ fun main() {
 
         when (parts[0].lowercase()) {
             "load" -> {
-//                if (parts.size < 3) {
-//                    println("Uso correto: load <file1> <file2>")
-//                    continue
-//                }
+
                 val file1 = parts[1]
                 val file2 = parts[2]
 

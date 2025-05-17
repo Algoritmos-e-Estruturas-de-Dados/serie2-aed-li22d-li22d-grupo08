@@ -1,29 +1,14 @@
 package serie2.part4
-import java.util.*
-import java.io.BufferedReader
-import java.io.FileReader
-import java.io.PrintWriter
-//Implementação com Kotlin
-
-fun createReader(fileName: String): BufferedReader {
-    return BufferedReader(FileReader(fileName))
-}
-
-fun createWriter(fileName: String): PrintWriter {
-    return PrintWriter(fileName)
-}
 
 
-data class Point(val x: Float, val y: Float)
-
-fun lerFicheiros(file1: String, file2: String): HashMap<Point, MutableSet<String>> {
-    val map = HashMap<Point, MutableSet<String>>()
+fun readFiles(file1: String, file2: String): AEDHashMap<Point, MutableSet<String>> {
+    val map = AEDHashMap<Point, MutableSet<String>>()
 
     fun ler(fileName: String, origem: String) {
         val reader = createReader(fileName)
         reader.useLines { lines ->
-            for (linha in lines) {
-                val limpa = linha.trim()
+            for (l in lines) {
+                val limpa = l.trim()
                 if (limpa.startsWith("v")) {
                     val partes = limpa.split(" ").filter { it.isNotEmpty() }
                     if (partes.size >= 4) {
@@ -31,7 +16,8 @@ fun lerFicheiros(file1: String, file2: String): HashMap<Point, MutableSet<String
                         val y = partes[3].toFloatOrNull()
                         if (x != null && y != null) {
                             val p = Point(x, y)
-                            map.computeIfAbsent(p) { mutableSetOf() }.add(origem)
+                            val conjunto = map.get(p) ?: mutableSetOf<String>().also { map.put(p, it) }
+                            conjunto.add(origem)
                         }
                     }
                 }
@@ -45,43 +31,58 @@ fun lerFicheiros(file1: String, file2: String): HashMap<Point, MutableSet<String
 }
 
 
-
-fun ficheiroFinal(fileName: String, pontos: Set<Point>) {
-    val writer = createWriter(fileName)
-    for (p in pontos) {
-        writer.println("${p.x} ${p.y}")
+fun union(map: AEDHashMap<Point, MutableSet<String>>): Set<Point> {
+    val resultado = mutableSetOf<Point>()
+    for (entry in map) {
+        resultado.add(entry.key)
     }
-    writer.close()
-}
-fun union(map: Map<Point, Set<String>>): Set<Point> {
-    return map.keys
+    return resultado
 }
 
-fun intersection(map: Map<Point, Set<String>>): Set<Point> {
-    return map.filter { it.value.containsAll(setOf("f1", "f2")) }.keys
+fun intersection(map: AEDHashMap<Point, MutableSet<String>>): Set<Point> {
+    val resultado = mutableSetOf<Point>()
+    for (entry in map) {
+        if (entry.value.containsAll(setOf("f1", "f2"))) {
+            resultado.add(entry.key)
+        }
+    }
+    return resultado
 }
 
-fun difference(map: Map<Point, Set<String>>): Set<Point> {
-    return map.filter { it.value.contains("f1") && !it.value.contains("f2") }.keys
+fun difference(map: AEDHashMap<Point, MutableSet<String>>): Set<Point> {
+    val resultado = mutableSetOf<Point>()
+    for (entry in map) {
+        val origem = entry.value
+        if ("f1" in origem && "f2" !in origem) {
+            resultado.add(entry.key)
+        }
+    }
+    return resultado
 }
-
 
 fun main() {
-    var pontosMap: HashMap<Point, MutableSet<String>>? = null
+    var pontosMap: AEDHashMap<Point, MutableSet<String>>? = null
 
     while (true) {
-        print("Digite um dos comandos: load, union, intersection, difference, exit\n>")
-        val input = readLine() ?: break
+        print("Digite um dos comandos: load, union, intersection, difference, exit\n> ")
+        val input = readlnOrNull() ?: break
         val parts = input.trim().split(' ').filter { it.isNotEmpty() }
 
         when (parts[0].lowercase()) {
             "load" -> {
-
+                if (parts.size < 3) {
+                    println("Uso correto: load <ficheiro1> <ficheiro2>")
+                    continue
+                }
                 val file1 = parts[1]
                 val file2 = parts[2]
 
-                pontosMap = lerFicheiros(file1, file2)
-                println("Ficheiros carregados com sucesso.")
+                try {
+                    pontosMap = readFiles(file1, file2)
+                    println("Ficheiros carregados com sucesso.")
+                } catch (e: Exception) {
+                    println("Erro ao carregar ficheiros: ${e.message}")
+                }
             }
 
             "union" -> {
@@ -90,7 +91,7 @@ fun main() {
                     continue
                 }
                 if (parts.size < 2) {
-                    println("Union <outputfile>")
+                    println("Uso correto: union <outputfile>")
                     continue
                 }
                 val outputFile = parts[1]
@@ -105,7 +106,7 @@ fun main() {
                     continue
                 }
                 if (parts.size < 2) {
-                    println("Intersection <outputfile>")
+                    println("Uso correto: intersection <outputfile>")
                     continue
                 }
                 val outputFile = parts[1]
@@ -120,7 +121,7 @@ fun main() {
                     continue
                 }
                 if (parts.size < 2) {
-                    println("Difference <outputfile>")
+                    println("Uso correto: difference <outputfile>")
                     continue
                 }
                 val outputFile = parts[1]
@@ -135,16 +136,10 @@ fun main() {
             }
 
             else -> {
-                println("Iválido!! Comandos válidos: load, union, intersection, difference, exit")
+                println("Comando inválido! Comandos válidos: load, union, intersection, difference, exit")
             }
         }
     }
 }
-
-
-
-
-
-
 
 

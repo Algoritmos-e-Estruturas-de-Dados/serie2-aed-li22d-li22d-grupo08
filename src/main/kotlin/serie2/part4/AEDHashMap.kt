@@ -1,12 +1,10 @@
 package serie2.part4
 
-import serie2.part3.Node
-
-class HashMap<K, V> (initialCapacity: Int = 16, val loadFactor: Float = 0.75f) : MutableMap<K, V> {
+class AEDHashMap<K, V> (initialCapacity: Int = 16, val loadFactor: Float = 0.75f) : AEDMutableMap<K, V> {
     private class HashNode<K, V>(
         override val key: K, override var value: V,
         var next: HashNode<K, V>? = null
-    ) : MutableMap.MutableEntry<K, V> {
+    ) : AEDMutableMap.MutableEntry<K, V> {
         var hc = key.hashCode()
         override fun setValue(newValue: V): V {
             val oldValue = value
@@ -14,7 +12,6 @@ class HashMap<K, V> (initialCapacity: Int = 16, val loadFactor: Float = 0.75f) :
             return oldValue
         }
     }
-
 
     private var table: Array<HashNode<K, V>?> = arrayOfNulls(initialCapacity)
 
@@ -28,7 +25,7 @@ class HashMap<K, V> (initialCapacity: Int = 16, val loadFactor: Float = 0.75f) :
     }
      override fun put(key: K,Value:V):V? {
 
-         if (size* loadFactor >= capacity) expand()
+         if (size * loadFactor >= capacity) expand()
          val idx = hash(key)
          var current = table[idx]
 
@@ -80,7 +77,8 @@ class HashMap<K, V> (initialCapacity: Int = 16, val loadFactor: Float = 0.75f) :
 
         table = newTable
     }
-    private inner class MyIterator: Iterator<MutableMap.MutableEntry<K,V>> {
+
+    private inner class MyIterator: Iterator<AEDMutableMap.MutableEntry<K,V>> {
         var currIdx = -1;
         var currNode: HashNode<K,V>? = null
         var list: HashNode<K,V>? = null
@@ -100,17 +98,17 @@ class HashMap<K, V> (initialCapacity: Int = 16, val loadFactor: Float = 0.75f) :
             return false;
         }
 
-        override fun next(): MutableMap.MutableEntry<K,V> {
+        override fun next(): AEDMutableMap.MutableEntry<K,V> {
             if (!hasNext()) throw NoSuchElementException()
-            val aux = currNode
+            val aux = currNode!!
             currNode = null
-            return aux ?: Any() as MutableMap.MutableEntry<K,V>
+            return aux
         }
     }
 
 
 
-    override fun iterator(): Iterator<MutableMap.MutableEntry<K,V>,> = MyIterator()
+    override fun iterator(): Iterator<AEDMutableMap.MutableEntry<K,V>,> = MyIterator()
 
 
 
